@@ -1,5 +1,5 @@
 ---
-title: "The Pandas Reference"
+title: "Mastering Data Manipulation in Pandas: A Guide to Key SQL Operations"
 author: "Naveenan Arjunan"
 date: "2024-03-02"
 categories: [pandas, sql, analysis]
@@ -10,9 +10,9 @@ image: "image.jpg"
 
 ## About
 
-In the vast world of data, it's common to encounter information organized in a rectangular format, characterized by its rows and columns. This type of data goes by various names—whether it's referred to as table data, data frames, structured data, spreadsheets, or through the lens of the Python library, Pandas, known for data manipulation for structured datasets. This blog post dives into the essential operations integral to any data analysis project, mirroring SQL equivalents such as selecting column references, scalar expressions, applying conditions with 'where', grouping, aggregating, ordering, utilizing window functions, and joining datasets.
+Data is often organized in a rectangular format with rows and columns, commonly known as table data, data frames, structured data, or spreadsheets. In Python, the Pandas library is a powerful tool for manipulating such structured datasets. This blog post explores essential operations in data analysis with Pandas, aligning with SQL concepts such as selecting columns, applying conditions, grouping, aggregating, ordering, and joining datasets.
 
-Embarking on my journey with Pandas, I quickly noticed the plethora of methods available for executing identical tasks. Moreover, the transition from the succinctness of SQL queries to Pandas code often resulted in less elegant, challenging-to-debug scripts. Through this post, I aim to demystify the process of performing these cornerstone SQL operations within Pandas, guiding you towards crafting code that's not only readable but also straightforward to maintain. Join me as we explore practical examples to elevate your data manipulation skills in Python.
+Having worked with Pandas, I noticed that while it offers numerous methods for similar tasks, the transition from SQL to Pandas can sometimes lead to less elegant and harder-to-debug code. This post aims to simplify the execution of these core SQL operations in Pandas, providing clear examples to enhance your data manipulation skills in Python.
 
 
 ```{python}
@@ -25,14 +25,9 @@ pd.options.display.max_rows = 20
 df.head(5)
 ```
 
-## Select columns
+## Selecting columns
 
-To select specific columns, employ the .loc method combined with a list of the column names you wish to include. I suggest adopting this approach because it grants enhanced flexibility for your data analysis endeavors.
-
-`.loc[:,['col1','col2']]`
-
-For example, to extract the total_bill and tips columns from your dataset, utilize method chaining to execute these operations sequentially. This technique allows for a streamlined and efficient workflow.
-
+To select specific columns, use the .loc method with a list of column names. This approach offers flexibility in data analysis.
 
 ```{python}
 (df
@@ -41,7 +36,7 @@ For example, to extract the total_bill and tips columns from your dataset, utili
 )
 ```
 
-Select columns that begin with the letter 't' by employing a straightforward and intelligible syntax. This method simplifies executing complex selection tasks in Pandas, making your data analysis more efficient.
+To select columns starting with 't':
 
 ```{python}
 (df
@@ -50,43 +45,31 @@ Select columns that begin with the letter 't' by employing a straightforward and
 )
 ```
 
-## Select columns manipulation
+## Column Manipulation
 
-To create new columns or modify existing ones, the .assign method is your go-to. This approach not only allows for the addition of new columns but also the updating of existing ones in a concise manner.
+Use the `.assign` method to create or modify columns:
 
-To add a new column with a constant value
-`.assign(new_col=1)`
-To introduce a new column based on operations with existing columns: 
-`.assign(new_col=lambda x:x['col']+1)`
-To update an existing column by modifying its values: 
-`.assign(old_col=lambda x:x['old_col']+1)`
-
+Add a new column with a constant value: `.assign(new_col=1)`
+Add a new column based on existing columns: `.assign(new_col=lambda x: x['col'] + 1)`
+Update an existing column: `.assign(old_col=lambda x: x['old_col'] + 1)`
 
 ```{python}
 (df
  .loc[:,['total_bill','tip','sex','day','time']]
- .assign(percentage_tip=lambda x:x['tip']/x['total_bill']) #add new column
- .assign(tip=lambda x:x['tip']+1) # update existing column 
- .assign(count=1) #add constant value 
+ .assign(percentage_tip=lambda x:x['tip']/x['total_bill']) #Add new column
+ .assign(tip=lambda x:x['tip']+1) # Update existing column 
+ .assign(count=1) #Add constant value 
  .head()
 )
 ```
 
 
-## Filter rows (where)
+## Filtering Rows
 
-Utilize the query method to filter row in a pandas Dataframe 
-
-`
-val=10
-.query("col1>='10'")
-.query("col1>='@val'")
-.query(f"col1>='{val}'")
-.query("col1.isin(['a','b'])",engine='python')
-`
+Use the `.query` method to filter rows:
 
 ```{python}
-#filter only transaction with more than 15% in tips
+#Filter only transaction with more than 15% in tips
 (df
  .loc[:,['total_bill','tip','sex','day','time']]
  .assign(percentage_tip=lambda x:x['tip']/x['total_bill'])
@@ -95,18 +78,10 @@ val=10
 )
 ```
 
+Using variables in queries:
 
 ```{python}
 per_tip=.15
-#using @ within query to refer a variable in the filter 
-print("")
-display(df
- .loc[:,['total_bill','tip','sex','day','time']]
- .assign(percentage_tip=lambda x:x['tip']/x['total_bill'])
- .query("percentage_tip>@per_tip")
- .head()
-)
-
 #using f-string to perform filtering
 display(df
  .loc[:,['total_bill','tip','sex','day','time']]
@@ -128,8 +103,7 @@ display(df
 
 ## Group By and Aggregation
 
-Leverage `groupby` along with `named aggs` for versatile aggregations. The aggregation functions accommodate lambda expressions and numpy operations for comprehensive data analysis.
-
+Use groupby and agg for aggregations:
 
 ```{python}
 #By day get average and total bill
@@ -153,12 +127,9 @@ Leverage `groupby` along with `named aggs` for versatile aggregations. The aggre
 )
 ```
 
-## Ordering rows
+## Ordering Rows
 
-Sorting is often a necessary step in data analysis, either as a preparatory action or to organize the final output. In pandas, this is achieved through the sort_values function, which orders the DataFrame by specified columns or axes.
-
-.sort_values(['col1','col2'],ascending=[True,False])
-
+Sort data using .sort_values:
 
 ```{python}
 #By day get average and total bill.Sort the output by total_bill
@@ -167,19 +138,7 @@ Sorting is often a necessary step in data analysis, either as a preparatory acti
  .agg(avg_bill=('total_bill','mean')
      ,total_bill=('total_bill','sum'))
  .reset_index()
- .sort_values(['total_bill']) #Default in ascending 
-)
-```
-
-
-```{python}
-#By day get average and total bill.Sort the output by total_bill
-(df
- .groupby(['day'])
- .agg(avg_bill=('total_bill','mean')
-     ,total_bill=('total_bill','sum'))
- .reset_index()
- .sort_values(['total_bill'],ascending=[False]) #By descending order 
+ .sort_values(['total_bill'],ascending=False) #Default in ascending 
 )
 ```
 
@@ -195,10 +154,9 @@ Sorting is often a necessary step in data analysis, either as a preparatory acti
 )
 ```
 
-## Window function
+## Window Functions
 
-Window functions in SQL offering advanced data manipulation capabilities. We will explore how to utilize key functions such as `row_number()`, `LEAD()`/`LAG()`, and calculate a running sum within each group (partition).
-
+Perform advanced data manipulation with window functions:
 
 ```{python}
 #Equivalent of row_number() over(partition by day order by total_bill asc) as row_number
@@ -209,7 +167,7 @@ Window functions in SQL offering advanced data manipulation capabilities. We wil
 )
 ```
 
-
+Calculate lead and lag values:
 ```{python}
 #Equivalent of lag(total_bill) over(partition by day order by total_bill asc) as previous_bill
 (df
@@ -249,4 +207,4 @@ Window functions in SQL offering advanced data manipulation capabilities. We wil
 
 ## Conclusion
 
-Through this blog post, I've provided a few straightforward strategies to enhance the efficiency of data analysis projects. I intend to enrich this post with additional examples, aiming to simplify data analysis with pandas further.
+This post provides fundamental strategies for effective data analysis with Pandas. Future updates will include additional examples to further simplify data analysis using Pandas.
