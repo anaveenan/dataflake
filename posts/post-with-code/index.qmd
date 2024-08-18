@@ -66,37 +66,23 @@ Update an existing column: `.assign(old_col=lambda x: x['old_col'] + 1)`
 
 ## Filtering Rows
 
-Use the `.query` method to filter rows:
+Use the `.loc` method to filter rows:
 
 ```{python}
 #Filter only transaction with more than 15% in tips
 (df
  .loc[:,['total_bill','tip','sex','day','time']]
  .assign(percentage_tip=lambda x:x['tip']/x['total_bill'])
- .query("percentage_tip>.15")
+ .loc[lambda x:x['percentage_tip']>.15,:]
  .head()
 )
 ```
-
-Using variables in queries:
-
-```{python}
-per_tip=.15
-#using f-string to perform filtering
-display(df
- .loc[:,['total_bill','tip','sex','day','time']]
- .assign(percentage_tip=lambda x:x['tip']/x['total_bill'])
- .query(f"percentage_tip>{per_tip}")
- .head()
-)
-```
-
 
 ```{python}
 #Filter only transactions happend on Sunday and Monday
 (df
  .loc[:,['total_bill','tip','sex','day','time']]
- .query("day.isin(['Sun','Mon'])",engine='python')
+ .loc[lambda x:x['day'].isin(['Sun','Mon']),:]
  .head()
 )
 ```
@@ -138,7 +124,7 @@ Sort data using .sort_values:
  .agg(avg_bill=('total_bill','mean')
      ,total_bill=('total_bill','sum'))
  .reset_index()
- .sort_values(['total_bill'],ascending=False) #Default in ascending 
+ .sort_values(['total_bill'],ascending=False) #Default is ascending 
 )
 ```
 
