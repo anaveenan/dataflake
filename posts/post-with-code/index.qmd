@@ -1,0 +1,252 @@
+---
+title: "The Pandas Reference"
+author: "Naveenan Arjunan"
+date: "2024-03-02"
+categories: [pandas, sql, analysis]
+image: "image.jpg"
+
+---
+
+
+## About
+
+In the vast world of data, it's common to encounter information organized in a rectangular format, characterized by its rows and columns. This type of data goes by various names—whether it's referred to as table data, data frames, structured data, spreadsheets, or through the lens of the Python library, Pandas, known for data manipulation for structured datasets. This blog post dives into the essential operations integral to any data analysis project, mirroring SQL equivalents such as selecting column references, scalar expressions, applying conditions with 'where', grouping, aggregating, ordering, utilizing window functions, and joining datasets.
+
+Embarking on my journey with Pandas, I quickly noticed the plethora of methods available for executing identical tasks. Moreover, the transition from the succinctness of SQL queries to Pandas code often resulted in less elegant, challenging-to-debug scripts. Through this post, I aim to demystify the process of performing these cornerstone SQL operations within Pandas, guiding you towards crafting code that's not only readable but also straightforward to maintain. Join me as we explore practical examples to elevate your data manipulation skills in Python.
+
+
+```{python}
+#| echo: true
+#| warning: false
+import pandas as pd
+import numpy as np
+df = pd.read_csv("https://raw.githubusercontent.com/mwaskom/seaborn-data/master/tips.csv")
+pd.options.display.max_rows = 20
+df.head(5)
+```
+
+## Select columns
+
+To select specific columns, employ the .loc method combined with a list of the column names you wish to include. I suggest adopting this approach because it grants enhanced flexibility for your data analysis endeavors.
+
+`.loc[:,['col1','col2']]`
+
+For example, to extract the total_bill and tips columns from your dataset, utilize method chaining to execute these operations sequentially. This technique allows for a streamlined and efficient workflow.
+
+
+```{python}
+(df
+ .loc[:,['tip','sex']]
+ .head()
+)
+```
+
+Select columns that begin with the letter 't' by employing a straightforward and intelligible syntax. This method simplifies executing complex selection tasks in Pandas, making your data analysis more efficient.
+
+```{python}
+(df
+ .loc[:,[col for col in df.columns if col.startswith('t')]]
+ .head()
+)
+```
+
+## Select columns manipulation
+
+To create new columns or modify existing ones, the .assign method is your go-to. This approach not only allows for the addition of new columns but also the updating of existing ones in a concise manner.
+
+To add a new column with a constant value
+`.assign(new_col=1)`
+To introduce a new column based on operations with existing columns: 
+`.assign(new_col=lambda x:x['col']+1)`
+To update an existing column by modifying its values: 
+`.assign(old_col=lambda x:x['old_col']+1)`
+
+
+```{python}
+(df
+ .loc[:,['total_bill','tip','sex','day','time']]
+ .assign(percentage_tip=lambda x:x['tip']/x['total_bill']) #add new column
+ .assign(tip=lambda x:x['tip']+1) # update existing column 
+ .assign(count=1) #add constant value 
+ .head()
+)
+```
+
+
+## Filter rows (where)
+
+Utilize the query method to filter row in a pandas Dataframe 
+
+`
+val=10
+.query("col1>='10'")
+.query("col1>='@val'")
+.query(f"col1>='{val}'")
+.query("col1.isin(['a','b'])",engine='python')
+`
+
+```{python}
+#filter only transaction with more than 15% in tips
+(df
+ .loc[:,['total_bill','tip','sex','day','time']]
+ .assign(percentage_tip=lambda x:x['tip']/x['total_bill'])
+ .query("percentage_tip>.15")
+ .head()
+)
+```
+
+
+```{python}
+per_tip=.15
+#using @ within query to refer a variable in the filter 
+print("")
+display(df
+ .loc[:,['total_bill','tip','sex','day','time']]
+ .assign(percentage_tip=lambda x:x['tip']/x['total_bill'])
+ .query("percentage_tip>@per_tip")
+ .head()
+)
+
+#using f-string to perform filtering
+display(df
+ .loc[:,['total_bill','tip','sex','day','time']]
+ .assign(percentage_tip=lambda x:x['tip']/x['total_bill'])
+ .query(f"percentage_tip>{per_tip}")
+ .head()
+)
+```
+
+
+```{python}
+#Filter only transactions happend on Sunday and Monday
+(df
+ .loc[:,['total_bill','tip','sex','day','time']]
+ .query("day.isin(['Sun','Mon'])",engine='python')
+ .head()
+)
+```
+
+## Group By and Aggregation
+
+Leverage `groupby` along with `named aggs` for versatile aggregations. The aggregation functions accommodate lambda expressions and numpy operations for comprehensive data analysis.
+
+
+```{python}
+#By day get average and total bill
+(df
+ .groupby(['day'])
+ .agg(avg_bill=('total_bill','mean')
+     ,total_bill=('total_bill','sum')) #multiple column aggregations supported
+ .reset_index()
+)
+```
+
+
+```{python}
+#By day get average of total bill using : functions, lambda functions, numpy functions 
+(df
+ .groupby(['day'])
+ .agg(avg_bill_mean=('total_bill','mean')
+     ,avg_bill_lambda=('total_bill',lambda x:x.mean()) #using lambda functions
+     ,avg_bill_np=('total_bill',np.mean)) #using numpy functions 
+ .reset_index()
+)
+```
+
+## Ordering rows
+
+Sorting is often a necessary step in data analysis, either as a preparatory action or to organize the final output. In pandas, this is achieved through the sort_values function, which orders the DataFrame by specified columns or axes.
+
+.sort_values(['col1','col2'],ascending=[True,False])
+
+
+```{python}
+#By day get average and total bill.Sort the output by total_bill
+(df
+ .groupby(['day'])
+ .agg(avg_bill=('total_bill','mean')
+     ,total_bill=('total_bill','sum'))
+ .reset_index()
+ .sort_values(['total_bill']) #Default in ascending 
+)
+```
+
+
+```{python}
+#By day get average and total bill.Sort the output by total_bill
+(df
+ .groupby(['day'])
+ .agg(avg_bill=('total_bill','mean')
+     ,total_bill=('total_bill','sum'))
+ .reset_index()
+ .sort_values(['total_bill'],ascending=[False]) #By descending order 
+)
+```
+
+
+```{python}
+#By day get average and total bill.Sort the output by total_bill and avg_bill
+(df
+ .groupby(['day'])
+ .agg(avg_bill=('total_bill','mean')
+     ,total_bill=('total_bill','sum'))
+ .reset_index()
+ .sort_values(['total_bill','avg_bill'],ascending=[False,True]) #By multiple columns one by asc and other by desc
+)
+```
+
+## Window function
+
+Window functions in SQL offering advanced data manipulation capabilities. We will explore how to utilize key functions such as `row_number()`, `LEAD()`/`LAG()`, and calculate a running sum within each group (partition).
+
+
+```{python}
+#Equivalent of row_number() over(partition by day order by total_bill asc) as row_number
+(df
+ .assign(row_number=lambda x:x.sort_values(['total_bill'],ascending=[True]).groupby(['day']).cumcount()+1)
+ .sort_values(['row_number'])
+ .head()
+)
+```
+
+
+```{python}
+#Equivalent of lag(total_bill) over(partition by day order by total_bill asc) as previous_bill
+(df
+ .assign(row_number=lambda x:x.sort_values(['total_bill'],ascending=[True]).groupby(['day']).cumcount()+1)
+ .assign(prev_bill=lambda x:x.sort_values(['total_bill'],ascending=[True]).groupby(['day'])['total_bill'].shift(1))
+ .sort_values(['row_number'])
+ .head()
+)
+```
+
+
+```{python}
+#Equivalent of lead(total_bill) over(partition by day order by total_bill asc) as previous_bill
+(df
+ .assign(row_number=lambda x:x.sort_values(['total_bill'],ascending=[True]).groupby(['day']).cumcount()+1)
+ .assign(next_bill=lambda x:x.sort_values(['total_bill'],ascending=[True]).groupby(['day'])['total_bill'].shift(-1))
+ .sort_values(['row_number'])
+ .head()
+)
+```
+
+
+```{python}
+#Equivalent of sum(total_bill) over(partition by day) as sum_bill_day
+#Equivalent of sum(tip) over(partition by day order by total_bill asc) as cum_tip_day
+#Equivalent of sum(tip) over(partition by day order by total_bill rows between 3 preceeding and current row) as rolling_3d_sum 
+
+(df
+ .assign(sum_bill_day=lambda x:x.groupby(['day'])['total_bill'].transform('sum'))
+ .assign(cum_tip_day=lambda x:x.sort_values(['total_bill']).groupby(['day'])['tip'].cumsum())
+ .assign(rolling_3d_sum=lambda x:x.sort_values(['total_bill']).groupby(['day'])['tip'].rolling(window=2,min_periods=1).sum().reset_index(drop=True, level=0))
+ .query("day=='Sat'")
+ .sort_values(['total_bill'])
+ .head()
+)
+```
+
+## Conclusion
+
+Through this blog post, I've provided a few straightforward strategies to enhance the efficiency of data analysis projects. I intend to enrich this post with additional examples, aiming to simplify data analysis with pandas further.

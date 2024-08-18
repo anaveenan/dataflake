@@ -1,0 +1,21 @@
+---
+title: "Decorators"
+author: "Naveenan Arjunan"
+date: "2024-03-02"
+categories: [python,A/B testing,datascience]
+
+---
+
+This article is part of the "Day in life of a Data Scientist" series, sharing some of the real-world problems data scientist work on daily. The question: How do we measure the impact of launching of a machine learning the business metrics when A/B testing can't be done due to operational constraints ? 
+
+Problem: 
+
+We have developed an algorithm that helps agents perform outreach to maximize sales. Ideally, We would measure its impact using an A/B test, comparing the sales between agents using the model and those who aren't. However, the operatinal challenges made running a A/B testing impractical. 
+
+Solution: 
+
+The solution to this problem is to use Interrupted Time Series (ITS) analysis. 
+
+
+
+

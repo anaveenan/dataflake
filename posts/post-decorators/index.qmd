@@ -1,0 +1,218 @@
+---
+title: "Decorators"
+author: "Naveenan Arjunan"
+date: "2024-03-02"
+categories: [python,advanced-python]
+
+---
+
+## Decorator 
+
+### What are decorator ? 
+
+A decorator is a special kind of callable that wraps another function or class to modify or enhance its behavior. They are used to apply repetitive operations or modifications across multiple functions or classes. You can introduce new behavior to functions or classes in several moments:
+
+1. At the time of their definition.   
+2. Just before they are called.    
+3. Right after they are called. 
+
+To illustrate how decorators works, consider the following example: we've have created a decorator named `dec`, a type of function that takes another function - let's say `hello` - as it parameter and that prints the name of the function. When you prepend `hello` with `@dec`, it effectively performs the operation `dec(hello)` behind the scenes.
+
+
+① - Prints the function name when the function is defined. Note the function is not called yet. 
+
+```{python}
+#| echo: true
+#| warning: false
+#| class-output: highlight
+
+def dec(func): 
+    print(f"Function: {func.__name__} is defined") #① 
+
+@dec
+def hello():
+    print("hello")
+```
+
+### Basic decorator 
+Let's extent the decorator from previous section to add the following additional behavior when the function is called.
+
+① - Print start prior to calling the function   
+② - Call the actual function   
+③ - Print end after calling the function   
+
+```{python}
+#| echo: true
+#| warning: false
+def dec(func): 
+    print(f"Function: {func.__name__} is defined")
+    def wrapper():
+        print("start") #①
+        func() #② 
+        print("end")#③
+    return wrapper
+
+@dec
+def hello():
+    print("hello")
+print('-' * 40)
+
+hello()
+```
+
+### Handling arguments in a decorator 
+
+① - Pass arguments in the function  
+② - Add args and kwargs in the wrapper function arguments  
+③ - Call the function with the args and kwargs passed    
+
+```{python}
+#| echo: true
+#| warning: false
+def dec(func): 
+    print(f"Function: {func.__name__} is defined")
+    def wrapper(*args,**kwargs): #②
+        print("start") 
+        func(*args,**kwargs) #③ 
+        print("end")
+    return wrapper
+
+@dec
+def hello(x:str)->None:#①
+    """concat hello with passed in string and print"""
+    print(f"hello {x}")
+
+hello('world')
+
+print('-' * 40)
+
+#④
+print(f"Func. Name: {hello.__name__}",sep='\n')
+print(f"Docstring: {hello.__doc__}",sep='\n')
+print(f"Annotations: {hello.__annotations__}",sep='\n')
+
+```
+
+### Preserve decorator metadata
+
+When we use a decorator, the function `dec` is replaced by the `wrapper` function. This means we loose most of the properties like name, docstring, annotations, etc. We can use `functools.wraps`, which takes a function used in a decorator and add the functionality of copying over the function names, docstrings, annotation, etc. 
+
+```{python}
+print(f"Func. Name: {hello.__name__}",sep='\n')
+print(f"Docstring: {hello.__doc__}",sep='\n')
+print(f"Annotations: {hello.__annotations__}",sep='\n')
+```
+
+```{python}
+#| echo: true
+#| warning: false
+
+from functools import wraps 
+
+def dec(func): 
+    print(f"Function: {func.__name__} is defined")
+    @wraps(func)
+    def wrapper(*args,**kwargs): #②
+        print("start") 
+        func(*args,**kwargs) #③ 
+        print("end")
+    return wrapper
+
+@dec
+def hello(x:str)->None: #①
+    """concat hello with passed in string and print"""
+    print(f"hello {x}")
+
+hello('world')
+
+#④
+print(f"Func. Name: {hello.__name__}",sep='\n')
+print(f"Docstring: {hello.__doc__}",sep='\n')
+print(f"Annotations: {hello.__annotations__}",sep='\n')
+
+```
+
+Returning value from a decorated function
+
+```{python}
+#| echo: true
+#| warning: false
+
+from functools import wraps 
+
+def dec(func): 
+    print(f"Function: {func.__name__} is defined")
+    @wraps(func)
+    def wrapper(*args,**kwargs): #②
+        print("start") 
+        result=func(*args,**kwargs) #①
+        print("end")
+        return result #②
+    return wrapper
+
+@dec
+def hello(x:str)->None: 
+    """concat hello with passed in string and print"""
+    print(f"hello {x}")
+    return 'hello'
+
+hello('world')
+```
+
+
+Passing  value to a decorator function 
+
+```{python}
+#| echo: true
+#| warning: false
+
+from functools import wraps 
+
+def dec(a,b): 
+    def dec_decorator(func):
+        print(f"Function: {func.__name__} is defined")
+        @wraps(func)
+        def wrapper(*args,**kwargs): #②
+            print(f"start:{a}") 
+            result=func(*args,**kwargs) #①
+            print(f"end:{b}")
+            return result #②
+        return wrapper
+    return dec_decorator
+
+@dec('a','b')
+def hello(x:str)->None: 
+    """concat hello with passed in string and print"""
+    print(f"hello {x}")
+    return 'hello'
+
+hello('world')
+```
+
+Example of a decorator 
+
+
+```{python}
+
+from functools import wraps
+from time import perf_counter
+def timer(func):
+    @wraps(func)
+    def wrapper(*args,**kwargs):
+        start_time=perf_counter()
+        func(*args,**kwargs)
+        end_time=perf_counter()
+        print(f"\N{Greek Capital Letter Delta} {end_time-start_time:.4f} sec")
+    return wrapper
+
+@timer
+def process_list(n=10000):
+    return sum(range(n))
+
+process_list()
+```
+
+
+```{python}
+
+```
