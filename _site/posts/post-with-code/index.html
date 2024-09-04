@@ -9,7 +9,7 @@
 <meta name="author" content="Naveenan Arjunan">
 <meta name="dcterms.date" content="2024-03-02">
 
-<title>Dataflake - Mastering Data Manipulation in Pandas: A Guide to Key SQL Operations</title>
+<title>DataFlake - Pandas Mastery: SQL Operations Made Easy</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -118,7 +118,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../../index.html">
-    <span class="navbar-title">Dataflake</span>
+    <span class="navbar-title">DataFlake</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -152,7 +152,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Mastering Data Manipulation in Pandas: A Guide to Key SQL Operations</h1>
+      <h1 class="title">Pandas Mastery: SQL Operations Made Easy</h1>
                                 <div class="quarto-categories">
                 <div class="quarto-category">pandas</div>
                 <div class="quarto-category">sql</div>
@@ -193,15 +193,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<section id="about" class="level2">
-<h2 class="anchored" data-anchor-id="about">About</h2>
-<p>Data is often organized in a rectangular format with rows and columns, commonly known as table data, data frames, structured data, or spreadsheets. In Python, the Pandas library is a powerful tool for manipulating such structured datasets. This blog post explores essential operations in data analysis with Pandas, aligning with SQL concepts such as selecting columns, applying conditions, grouping, aggregating, ordering, and joining datasets.</p>
-<p>Having worked with Pandas, I noticed that while it offers numerous methods for similar tasks, the transition from SQL to Pandas can sometimes lead to less elegant and harder-to-debug code. This post aims to simplify the execution of these core SQL operations in Pandas, providing clear examples to enhance your data manipulation skills in Python.</p>
-<div id="59e1d4d7" class="cell" data-execution_count="1">
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>Data analysis often involves working with structured datasets organized in rows and columns. While SQL has long been the go-to language for manipulating such data, Python’s Pandas library offers comparable functionality with added flexibility. This post explores how to perform essential SQL-like operations in Pandas, providing a bridge for analysts transitioning between these two powerful tools.</p>
+</section>
+<section id="setting-up-the-environment" class="level2">
+<h2 class="anchored" data-anchor-id="setting-up-the-environment">Setting Up the Environment</h2>
+<p>Let’s begin by importing the necessary libraries and loading our dataset:</p>
+<div id="5727d0c9" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"https://raw.githubusercontent.com/mwaskom/seaborn-data/master/tips.csv"</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>pd.options.display.max_rows <span class="op">=</span> <span class="dv">20</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>pd.options.display.max_rows <span class="op">=</span> <span class="dv">20</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"https://raw.githubusercontent.com/mwaskom/seaborn-data/master/tips.csv"</span>)</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>df.head(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <div>
@@ -280,15 +283,102 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
+<section id="about" class="level2">
+<h2 class="anchored" data-anchor-id="about">About</h2>
+<p>Data is often organized in a rectangular format with rows and columns, commonly known as table data, data frames, structured data, or spreadsheets. In Python, the Pandas library is a powerful tool for manipulating such structured datasets. This blog post explores essential operations in data analysis with Pandas, aligning with SQL concepts such as selecting columns, applying conditions, grouping, aggregating, ordering, and joining datasets.</p>
+<p>Having worked with Pandas, I noticed that while it offers numerous methods for similar tasks, the transition from SQL to Pandas can sometimes lead to less elegant and harder-to-debug code. This post aims to simplify the execution of these core SQL operations in Pandas, providing clear examples to enhance your data manipulation skills in Python.</p>
+<div id="97ec7817" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"https://raw.githubusercontent.com/mwaskom/seaborn-data/master/tips.csv"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>pd.options.display.max_rows <span class="op">=</span> <span class="dv">20</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df.head(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<div>
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">total_bill</th>
+<th data-quarto-table-cell-role="th">tip</th>
+<th data-quarto-table-cell-role="th">sex</th>
+<th data-quarto-table-cell-role="th">smoker</th>
+<th data-quarto-table-cell-role="th">day</th>
+<th data-quarto-table-cell-role="th">time</th>
+<th data-quarto-table-cell-role="th">size</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>16.99</td>
+<td>1.01</td>
+<td>Female</td>
+<td>No</td>
+<td>Sun</td>
+<td>Dinner</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>10.34</td>
+<td>1.66</td>
+<td>Male</td>
+<td>No</td>
+<td>Sun</td>
+<td>Dinner</td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>21.01</td>
+<td>3.50</td>
+<td>Male</td>
+<td>No</td>
+<td>Sun</td>
+<td>Dinner</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>23.68</td>
+<td>3.31</td>
+<td>Male</td>
+<td>No</td>
+<td>Sun</td>
+<td>Dinner</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>24.59</td>
+<td>3.61</td>
+<td>Female</td>
+<td>No</td>
+<td>Sun</td>
+<td>Dinner</td>
+<td>4</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</div>
+</section>
 <section id="selecting-columns" class="level2">
 <h2 class="anchored" data-anchor-id="selecting-columns">Selecting columns</h2>
-<p>To select specific columns, use the .loc method with a list of column names. This approach offers flexibility in data analysis.</p>
-<div id="a1462338" class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>(df</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a> .loc[:,[<span class="st">'tip'</span>,<span class="st">'sex'</span>]]</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a> .head()</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="2">
+<p>In Pandas, column selection is straightforward using the .loc accessor:</p>
+<div id="2a7aee02" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>(df</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a> .loc[:,[<span class="st">'tip'</span>,<span class="st">'sex'</span>]] <span class="co"># ①</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a> .head() </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 <div>
 
@@ -334,13 +424,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>To select columns starting with ‘t’:</p>
-<div id="8be43fe0" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>(df</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a> .loc[:,[col <span class="cf">for</span> col <span class="kw">in</span> df.columns <span class="cf">if</span> col.startswith(<span class="st">'t'</span>)]]</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a> .head()</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
+<p>For more dynamic selection, we can use list comprehensions:</p>
+<div id="fa6505bb" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>(df</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a> .loc[:,[col <span class="cf">for</span> col <span class="kw">in</span> df.columns <span class="cf">if</span> col.startswith(<span class="st">'t'</span>)]] <span class="co"># ②</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a> .head() </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 <div>
 
@@ -392,20 +482,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+<p>In the code above, ① demonstrates basic column selection, while ② shows a more advanced technique using a list comprehension. This method ② is particularly useful when you need to select columns based on a specific condition, such as all columns starting with a certain letter.</p>
 </section>
 <section id="column-manipulation" class="level2">
 <h2 class="anchored" data-anchor-id="column-manipulation">Column Manipulation</h2>
 <p>Use the <code>.assign</code> method to create or modify columns:</p>
-<p>Add a new column with a constant value: <code>.assign(new_col=1)</code> Add a new column based on existing columns: <code>.assign(new_col=lambda x: x['col'] + 1)</code> Update an existing column: <code>.assign(old_col=lambda x: x['old_col'] + 1)</code></p>
-<div id="1d3455df" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>(df</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a> .loc[:,[<span class="st">'total_bill'</span>,<span class="st">'tip'</span>,<span class="st">'sex'</span>,<span class="st">'day'</span>,<span class="st">'time'</span>]]</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a> .assign(percentage_tip<span class="op">=</span><span class="kw">lambda</span> x:x[<span class="st">'tip'</span>]<span class="op">/</span>x[<span class="st">'total_bill'</span>]) <span class="co">#Add new column</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a> .assign(tip<span class="op">=</span><span class="kw">lambda</span> x:x[<span class="st">'tip'</span>]<span class="op">+</span><span class="dv">1</span>) <span class="co"># Update existing column </span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a> .assign(count<span class="op">=</span><span class="dv">1</span>) <span class="co">#Add constant value </span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a> .head()</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
+<div id="776a14c5" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>(df</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a> .loc[:, [<span class="st">'total_bill'</span>, <span class="st">'tip'</span>, <span class="st">'sex'</span>, <span class="st">'day'</span>, <span class="st">'time'</span>]]</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a> .assign(percentage_tip<span class="op">=</span><span class="kw">lambda</span> x: x[<span class="st">'tip'</span>] <span class="op">/</span> x[<span class="st">'total_bill'</span>])  <span class="co"># ①</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a> .assign(tip<span class="op">=</span><span class="kw">lambda</span> x: x[<span class="st">'tip'</span>] <span class="op">+</span> <span class="dv">1</span>)  <span class="co"># ②</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a> .assign(count<span class="op">=</span><span class="dv">1</span>)  <span class="co"># ③</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a> .head()</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
 <div>
 <div>
 
@@ -481,19 +571,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+<p>Here, ① calculates a new column, ② modifies an existing column, and ③ adds a constant value column. This demonstrates the versatility of assign() in performing various column operations in a single chain.</p>
 </section>
 <section id="filtering-rows" class="level2">
 <h2 class="anchored" data-anchor-id="filtering-rows">Filtering Rows</h2>
-<p>Use the <code>.query</code> method to filter rows:</p>
-<div id="3b9dc45d" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Filter only transaction with more than 15% in tips</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>(df</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a> .loc[:,[<span class="st">'total_bill'</span>,<span class="st">'tip'</span>,<span class="st">'sex'</span>,<span class="st">'day'</span>,<span class="st">'time'</span>]]</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a> .assign(percentage_tip<span class="op">=</span><span class="kw">lambda</span> x:x[<span class="st">'tip'</span>]<span class="op">/</span>x[<span class="st">'total_bill'</span>])</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a> .query(<span class="st">"percentage_tip&gt;.15"</span>)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a> .head()</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="5">
+<p>Use the <code>.loc</code> method to filter rows:</p>
+<div id="171cc37c" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Filter only transaction with more than 15% in tips</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>(df</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a> .loc[:,[<span class="st">'total_bill'</span>,<span class="st">'tip'</span>,<span class="st">'sex'</span>,<span class="st">'day'</span>,<span class="st">'time'</span>]]</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a> .assign(percentage_tip<span class="op">=</span><span class="kw">lambda</span> x:x[<span class="st">'tip'</span>]<span class="op">/</span>x[<span class="st">'total_bill'</span>])</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a> .loc[<span class="kw">lambda</span> x:x[<span class="st">'percentage_tip'</span>]<span class="op">&gt;</span><span class="fl">.15</span>,:] <span class="co"># ①</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a> .head()</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
 <div>
 <div>
 
@@ -563,91 +654,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>Using variables in queries:</p>
-<div id="014b6aae" class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>per_tip<span class="op">=</span><span class="fl">.15</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#using f-string to perform filtering</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>display(df</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a> .loc[:,[<span class="st">'total_bill'</span>,<span class="st">'tip'</span>,<span class="st">'sex'</span>,<span class="st">'day'</span>,<span class="st">'time'</span>]]</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a> .assign(percentage_tip<span class="op">=</span><span class="kw">lambda</span> x:x[<span class="st">'tip'</span>]<span class="op">/</span>x[<span class="st">'total_bill'</span>])</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a> .query(<span class="ss">f"percentage_tip&gt;</span><span class="sc">{</span>per_tip<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a> .head()</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">total_bill</th>
-<th data-quarto-table-cell-role="th">tip</th>
-<th data-quarto-table-cell-role="th">sex</th>
-<th data-quarto-table-cell-role="th">day</th>
-<th data-quarto-table-cell-role="th">time</th>
-<th data-quarto-table-cell-role="th">percentage_tip</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">1</td>
-<td>10.34</td>
-<td>1.66</td>
-<td>Male</td>
-<td>Sun</td>
-<td>Dinner</td>
-<td>0.160542</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">2</td>
-<td>21.01</td>
-<td>3.50</td>
-<td>Male</td>
-<td>Sun</td>
-<td>Dinner</td>
-<td>0.166587</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">5</td>
-<td>25.29</td>
-<td>4.71</td>
-<td>Male</td>
-<td>Sun</td>
-<td>Dinner</td>
-<td>0.186240</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">6</td>
-<td>8.77</td>
-<td>2.00</td>
-<td>Male</td>
-<td>Sun</td>
-<td>Dinner</td>
-<td>0.228050</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">9</td>
-<td>14.78</td>
-<td>3.23</td>
-<td>Male</td>
-<td>Sun</td>
-<td>Dinner</td>
-<td>0.218539</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-</div>
-<div id="25393212" class="cell" data-execution_count="7">
+<p>The filter condition ① uses a lambda function within .loc[] to select rows where the tip percentage exceeds 15%. This approach provides a clean, SQL-like syntax for row filtering.</p>
+<div id="e7b711ee" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Filter only transactions happend on Sunday and Monday</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>(df</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a> .loc[:,[<span class="st">'total_bill'</span>,<span class="st">'tip'</span>,<span class="st">'sex'</span>,<span class="st">'day'</span>,<span class="st">'time'</span>]]</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a> .query(<span class="st">"day.isin(['Sun','Mon'])"</span>,engine<span class="op">=</span><span class="st">'python'</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a> .loc[<span class="kw">lambda</span> x:x[<span class="st">'day'</span>].isin([<span class="st">'Sun'</span>,<span class="st">'Mon'</span>]),:]</span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a> .head()</span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="7">
@@ -715,17 +727,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="group-by-and-aggregation" class="level2">
-<h2 class="anchored" data-anchor-id="group-by-and-aggregation">Group By and Aggregation</h2>
-<p>Use groupby and agg for aggregations:</p>
-<div id="0aeeb2ad" class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#By day get average and total bill</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>(df</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a> .groupby([<span class="st">'day'</span>])</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a> .agg(avg_bill<span class="op">=</span>(<span class="st">'total_bill'</span>,<span class="st">'mean'</span>)</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>     ,total_bill<span class="op">=</span>(<span class="st">'total_bill'</span>,<span class="st">'sum'</span>)) <span class="co">#multiple column aggregations supported</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a> .reset_index()</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="grouping-and-aggregation" class="level2">
+<h2 class="anchored" data-anchor-id="grouping-and-aggregation">Grouping and Aggregation</h2>
+<p>Pandas offers powerful grouping and aggregation capabilities:</p>
+<div id="80045db2" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>(df</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a> .groupby([<span class="st">'day'</span>])  <span class="co"># ①</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a> .agg(avg_bill<span class="op">=</span>(<span class="st">'total_bill'</span>, <span class="st">'mean'</span>),  <span class="co"># ②</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>      total_bill<span class="op">=</span>(<span class="st">'total_bill'</span>, <span class="st">'sum'</span>))</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a> .reset_index()</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="8">
 <div>
 <div>
@@ -772,7 +783,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<div id="abab02da" class="cell" data-execution_count="9">
+<p>In this example, ① groups the data by the ‘day’ column, and ② applies multiple aggregations. The agg() method allows for clear specification of column names and aggregation functions, similar to SQL’s GROUP BY and aggregate functions.</p>
+<div id="eacece94" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#By day get average of total bill using : functions, lambda functions, numpy functions </span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>(df</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a> .groupby([<span class="st">'day'</span>])</span>
@@ -782,9 +794,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a> .reset_index()</span>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>/var/folders/_m/75zm23zj7ps40gd_wwbvgfxh0000gn/T/ipykernel_60230/586994573.py:2: FutureWarning:
+<pre><code>/var/folders/_m/75zm23zj7ps40gd_wwbvgfxh0000gn/T/ipykernel_25443/586994573.py:2: FutureWarning:
 
-The provided callable &lt;function mean at 0x7fb018630ca0&gt; is currently using SeriesGroupBy.mean. In a future version of pandas, the provided callable will be used directly. To keep current behavior pass the string "mean" instead.
+The provided callable &lt;function mean at 0x7fdaf02f8ca0&gt; is currently using SeriesGroupBy.mean. In a future version of pandas, the provided callable will be used directly. To keep current behavior pass the string "mean" instead.
 </code></pre>
 </div>
 <div class="cell-output cell-output-display" data-execution_count="9">
@@ -841,15 +853,15 @@ The provided callable &lt;function mean at 0x7fb018630ca0&gt; is currently using
 </section>
 <section id="ordering-rows" class="level2">
 <h2 class="anchored" data-anchor-id="ordering-rows">Ordering Rows</h2>
-<p>Sort data using .sort_values:</p>
-<div id="a17d425a" class="cell" data-execution_count="10">
+<p>Sorting data in Pandas is achieved using the .sort_values method:</p>
+<div id="6104c8b8" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#By day get average and total bill.Sort the output by total_bill</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>(df</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a> .groupby([<span class="st">'day'</span>])</span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a> .agg(avg_bill<span class="op">=</span>(<span class="st">'total_bill'</span>,<span class="st">'mean'</span>)</span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>     ,total_bill<span class="op">=</span>(<span class="st">'total_bill'</span>,<span class="st">'sum'</span>))</span>
 <span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a> .reset_index()</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a> .sort_values([<span class="st">'total_bill'</span>],ascending<span class="op">=</span><span class="va">False</span>) <span class="co">#Default in ascending </span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a> .sort_values([<span class="st">'total_bill'</span>],ascending<span class="op">=</span>[<span class="va">False</span>]) <span class="co"># ①</span></span>
 <span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="10">
 <div>
@@ -897,164 +909,33 @@ The provided callable &lt;function mean at 0x7fb018630ca0&gt; is currently using
 </div>
 </div>
 </div>
-<div id="e4f327a1" class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">#By day get average and total bill.Sort the output by total_bill and avg_bill</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>(df</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a> .groupby([<span class="st">'day'</span>])</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a> .agg(avg_bill<span class="op">=</span>(<span class="st">'total_bill'</span>,<span class="st">'mean'</span>)</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>     ,total_bill<span class="op">=</span>(<span class="st">'total_bill'</span>,<span class="st">'sum'</span>))</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a> .reset_index()</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a> .sort_values([<span class="st">'total_bill'</span>,<span class="st">'avg_bill'</span>],ascending<span class="op">=</span>[<span class="va">False</span>,<span class="va">True</span>]) <span class="co">#By multiple columns one by asc and other by desc</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="11">
-<div>
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">day</th>
-<th data-quarto-table-cell-role="th">avg_bill</th>
-<th data-quarto-table-cell-role="th">total_bill</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">1</td>
-<td>Sat</td>
-<td>20.441379</td>
-<td>1778.40</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">2</td>
-<td>Sun</td>
-<td>21.410000</td>
-<td>1627.16</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">3</td>
-<td>Thur</td>
-<td>17.682742</td>
-<td>1096.33</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">0</td>
-<td>Fri</td>
-<td>17.151579</td>
-<td>325.88</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-</div>
+<p>The sorting operation ① is equivalent to SQL’s ORDER BY clause. It allows for sorting by multiple columns and specifying the sort order (ascending or descending).</p>
 </section>
 <section id="window-functions" class="level2">
 <h2 class="anchored" data-anchor-id="window-functions">Window Functions</h2>
-<p>Perform advanced data manipulation with window functions:</p>
-<div id="c0938580" class="cell" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Equivalent of row_number() over(partition by day order by total_bill asc) as row_number</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>(df</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a> .assign(row_number<span class="op">=</span><span class="kw">lambda</span> x:x.sort_values([<span class="st">'total_bill'</span>],ascending<span class="op">=</span>[<span class="va">True</span>]).groupby([<span class="st">'day'</span>]).cumcount()<span class="op">+</span><span class="dv">1</span>)</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a> .sort_values([<span class="st">'row_number'</span>])</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a> .head()</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="12">
-<div>
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">total_bill</th>
-<th data-quarto-table-cell-role="th">tip</th>
-<th data-quarto-table-cell-role="th">sex</th>
-<th data-quarto-table-cell-role="th">smoker</th>
-<th data-quarto-table-cell-role="th">day</th>
-<th data-quarto-table-cell-role="th">time</th>
-<th data-quarto-table-cell-role="th">size</th>
-<th data-quarto-table-cell-role="th">row_number</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">67</td>
-<td>3.07</td>
-<td>1.00</td>
-<td>Female</td>
-<td>Yes</td>
-<td>Sat</td>
-<td>Dinner</td>
-<td>1</td>
-<td>1</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">172</td>
-<td>7.25</td>
-<td>5.15</td>
-<td>Male</td>
-<td>Yes</td>
-<td>Sun</td>
-<td>Dinner</td>
-<td>2</td>
-<td>1</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">149</td>
-<td>7.51</td>
-<td>2.00</td>
-<td>Male</td>
-<td>No</td>
-<td>Thur</td>
-<td>Lunch</td>
-<td>2</td>
-<td>1</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">92</td>
-<td>5.75</td>
-<td>1.00</td>
-<td>Female</td>
-<td>Yes</td>
-<td>Fri</td>
-<td>Dinner</td>
-<td>2</td>
-<td>1</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">222</td>
-<td>8.58</td>
-<td>1.92</td>
-<td>Male</td>
-<td>Yes</td>
-<td>Fri</td>
-<td>Lunch</td>
-<td>1</td>
-<td>2</td>
-</tr>
-</tbody>
-</table>
-
+<p>Pandas can replicate complex SQL window functions:</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
 </div>
 </div>
+<div class="callout-body-container callout-body">
+<p>Window functions in Pandas, while powerful, can be complex. They offer advanced data manipulation capabilities similar to those in SQL.</p>
 </div>
 </div>
-<p>Calculate lead and lag values:</p>
-<div id="1cd6a38c" class="cell" data-execution_count="13">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Equivalent of lag(total_bill) over(partition by day order by total_bill asc) as previous_bill</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>(df</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a> .assign(row_number<span class="op">=</span><span class="kw">lambda</span> x:x.sort_values([<span class="st">'total_bill'</span>],ascending<span class="op">=</span>[<span class="va">True</span>]).groupby([<span class="st">'day'</span>]).cumcount()<span class="op">+</span><span class="dv">1</span>)</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a> .assign(prev_bill<span class="op">=</span><span class="kw">lambda</span> x:x.sort_values([<span class="st">'total_bill'</span>],ascending<span class="op">=</span>[<span class="va">True</span>]).groupby([<span class="st">'day'</span>])[<span class="st">'total_bill'</span>].shift(<span class="dv">1</span>))</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a> .sort_values([<span class="st">'row_number'</span>])</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a> .head()</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="13">
+<div id="633fdf36" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>(df</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a> .assign(row_number<span class="op">=</span><span class="kw">lambda</span> x:x.sort_values([<span class="st">'total_bill'</span>],ascending<span class="op">=</span>[<span class="va">True</span>]).groupby([<span class="st">'day'</span>]).cumcount()<span class="op">+</span><span class="dv">1</span>)  <span class="co"># ①</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a> .assign(prev_bill<span class="op">=</span><span class="kw">lambda</span> x:x.sort_values([<span class="st">'total_bill'</span>],ascending<span class="op">=</span>[<span class="va">True</span>]).groupby([<span class="st">'day'</span>])[<span class="st">'total_bill'</span>].shift(<span class="dv">1</span>)) <span class="co"># ②</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a> .assign(next_bill<span class="op">=</span><span class="kw">lambda</span> x:x.sort_values([<span class="st">'total_bill'</span>],ascending<span class="op">=</span>[<span class="va">True</span>]).groupby([<span class="st">'day'</span>])[<span class="st">'total_bill'</span>].shift(<span class="op">-</span><span class="dv">1</span>)) <span class="co"># </span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a> .sort_values([<span class="st">'row_number'</span>])</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a> .head()</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
 <div>
 <div>
 
@@ -1072,101 +953,6 @@ The provided callable &lt;function mean at 0x7fb018630ca0&gt; is currently using
 <th data-quarto-table-cell-role="th">size</th>
 <th data-quarto-table-cell-role="th">row_number</th>
 <th data-quarto-table-cell-role="th">prev_bill</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">67</td>
-<td>3.07</td>
-<td>1.00</td>
-<td>Female</td>
-<td>Yes</td>
-<td>Sat</td>
-<td>Dinner</td>
-<td>1</td>
-<td>1</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">172</td>
-<td>7.25</td>
-<td>5.15</td>
-<td>Male</td>
-<td>Yes</td>
-<td>Sun</td>
-<td>Dinner</td>
-<td>2</td>
-<td>1</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">149</td>
-<td>7.51</td>
-<td>2.00</td>
-<td>Male</td>
-<td>No</td>
-<td>Thur</td>
-<td>Lunch</td>
-<td>2</td>
-<td>1</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">92</td>
-<td>5.75</td>
-<td>1.00</td>
-<td>Female</td>
-<td>Yes</td>
-<td>Fri</td>
-<td>Dinner</td>
-<td>2</td>
-<td>1</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">222</td>
-<td>8.58</td>
-<td>1.92</td>
-<td>Male</td>
-<td>Yes</td>
-<td>Fri</td>
-<td>Lunch</td>
-<td>1</td>
-<td>2</td>
-<td>5.75</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-</div>
-<div id="e00b40ac" class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Equivalent of lead(total_bill) over(partition by day order by total_bill asc) as previous_bill</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>(df</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a> .assign(row_number<span class="op">=</span><span class="kw">lambda</span> x:x.sort_values([<span class="st">'total_bill'</span>],ascending<span class="op">=</span>[<span class="va">True</span>]).groupby([<span class="st">'day'</span>]).cumcount()<span class="op">+</span><span class="dv">1</span>)</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a> .assign(next_bill<span class="op">=</span><span class="kw">lambda</span> x:x.sort_values([<span class="st">'total_bill'</span>],ascending<span class="op">=</span>[<span class="va">True</span>]).groupby([<span class="st">'day'</span>])[<span class="st">'total_bill'</span>].shift(<span class="op">-</span><span class="dv">1</span>))</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a> .sort_values([<span class="st">'row_number'</span>])</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a> .head()</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="14">
-<div>
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">total_bill</th>
-<th data-quarto-table-cell-role="th">tip</th>
-<th data-quarto-table-cell-role="th">sex</th>
-<th data-quarto-table-cell-role="th">smoker</th>
-<th data-quarto-table-cell-role="th">day</th>
-<th data-quarto-table-cell-role="th">time</th>
-<th data-quarto-table-cell-role="th">size</th>
-<th data-quarto-table-cell-role="th">row_number</th>
 <th data-quarto-table-cell-role="th">next_bill</th>
 </tr>
 </thead>
@@ -1181,6 +967,7 @@ The provided callable &lt;function mean at 0x7fb018630ca0&gt; is currently using
 <td>Dinner</td>
 <td>1</td>
 <td>1</td>
+<td>NaN</td>
 <td>7.25</td>
 </tr>
 <tr class="even">
@@ -1193,6 +980,7 @@ The provided callable &lt;function mean at 0x7fb018630ca0&gt; is currently using
 <td>Dinner</td>
 <td>2</td>
 <td>1</td>
+<td>NaN</td>
 <td>8.77</td>
 </tr>
 <tr class="odd">
@@ -1205,6 +993,7 @@ The provided callable &lt;function mean at 0x7fb018630ca0&gt; is currently using
 <td>Lunch</td>
 <td>2</td>
 <td>1</td>
+<td>NaN</td>
 <td>7.56</td>
 </tr>
 <tr class="even">
@@ -1217,6 +1006,7 @@ The provided callable &lt;function mean at 0x7fb018630ca0&gt; is currently using
 <td>Dinner</td>
 <td>2</td>
 <td>1</td>
+<td>NaN</td>
 <td>8.58</td>
 </tr>
 <tr class="odd">
@@ -1229,6 +1019,7 @@ The provided callable &lt;function mean at 0x7fb018630ca0&gt; is currently using
 <td>Lunch</td>
 <td>1</td>
 <td>2</td>
+<td>5.75</td>
 <td>10.09</td>
 </tr>
 </tbody>
@@ -1238,20 +1029,17 @@ The provided callable &lt;function mean at 0x7fb018630ca0&gt; is currently using
 </div>
 </div>
 </div>
-<div id="ba6554c7" class="cell" data-execution_count="15">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Equivalent of sum(total_bill) over(partition by day) as sum_bill_day</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co">#Equivalent of sum(tip) over(partition by day order by total_bill asc) as cum_tip_day</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Equivalent of sum(tip) over(partition by day order by total_bill rows between 3 preceeding and current row) as rolling_3d_sum </span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>(df</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a> .assign(sum_bill_day<span class="op">=</span><span class="kw">lambda</span> x:x.groupby([<span class="st">'day'</span>])[<span class="st">'total_bill'</span>].transform(<span class="st">'sum'</span>))</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a> .assign(cum_tip_day<span class="op">=</span><span class="kw">lambda</span> x:x.sort_values([<span class="st">'total_bill'</span>]).groupby([<span class="st">'day'</span>])[<span class="st">'tip'</span>].cumsum())</span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a> .assign(rolling_3d_sum<span class="op">=</span><span class="kw">lambda</span> x:x.sort_values([<span class="st">'total_bill'</span>]).groupby([<span class="st">'day'</span>])[<span class="st">'tip'</span>].rolling(window<span class="op">=</span><span class="dv">2</span>,min_periods<span class="op">=</span><span class="dv">1</span>).<span class="bu">sum</span>().reset_index(drop<span class="op">=</span><span class="va">True</span>, level<span class="op">=</span><span class="dv">0</span>))</span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a> .query(<span class="st">"day=='Sat'"</span>)</span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a> .sort_values([<span class="st">'total_bill'</span>])</span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a> .head()</span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="15">
+<p>Here, ① creates a row number within each day group, sorted by total bill, similar to SQL’s ROW_NUMBER() function. ② calculates the previous bill amount within each day group, mimicking SQL’s LAG() function. ③ computes the next bill amount within each day group, equivalent to SQL’s LEAD() function.</p>
+<div id="63befe34" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>(df</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a> .assign(sum_bill_day<span class="op">=</span><span class="kw">lambda</span> x:x.groupby([<span class="st">'day'</span>])[<span class="st">'total_bill'</span>].transform(<span class="st">'sum'</span>)) <span class="co"># ④</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a> .assign(cum_tip_day<span class="op">=</span><span class="kw">lambda</span> x:x.sort_values([<span class="st">'total_bill'</span>]).groupby([<span class="st">'day'</span>])[<span class="st">'tip'</span>].cumsum()) <span class="co"># ⑤</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a> .assign(rolling_3d_sum<span class="op">=</span><span class="kw">lambda</span> x:x.sort_values([<span class="st">'total_bill'</span>]).groupby([<span class="st">'day'</span>])[<span class="st">'tip'</span>].rolling(window<span class="op">=</span><span class="dv">2</span>,min_periods<span class="op">=</span><span class="dv">1</span>).<span class="bu">sum</span>().reset_index(drop<span class="op">=</span><span class="va">True</span>, level<span class="op">=</span><span class="dv">0</span>)) <span class="co"># ⑥</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a> .query(<span class="st">"day=='Sat'"</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a> .sort_values([<span class="st">'total_bill'</span>])</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a> .head()</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
 <div>
 <div>
 
@@ -1345,10 +1133,11 @@ The provided callable &lt;function mean at 0x7fb018630ca0&gt; is currently using
 </div>
 </div>
 </div>
+<p>④ Calculates the sum of total bills for each day, equivalent to SUM(total_bill) OVER (PARTITION BY day) in SQL. ⑤ Computes the cumulative sum of tips within each day, ordered by total bill. This is similar to SUM(tip) OVER (PARTITION BY day ORDER BY total_bill ASC) in SQL. ⑥ Performs a rolling sum of tips over a 2-row window (current row and 1 preceding) within each day, ordered by total bill. This complex operation is akin to SUM(tip) OVER (PARTITION BY day ORDER BY total_bill ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) in SQL.</p>
 </section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>This post provides fundamental strategies for effective data analysis with Pandas. Future updates will include additional examples to further simplify data analysis using Pandas.</p>
+<p>This guide demonstrates how Pandas can effectively replicate key SQL operations. By mastering these techniques, analysts can seamlessly transition between SQL and Pandas, choosing the most appropriate tool for their specific data analysis needs.</p>
 
 
 </section>

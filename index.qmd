@@ -1,5 +1,5 @@
 ---
-title: "Dataflake"
+title: "DataFlake"
 listing:
   contents: posts
   sort: "date desc"
