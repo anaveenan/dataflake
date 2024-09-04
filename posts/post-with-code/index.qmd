@@ -24,25 +24,6 @@ df = pd.read_csv("https://raw.githubusercontent.com/mwaskom/seaborn-data/master/
 df.head(5)
 ```
 
-
-
-## About
-
-Data is often organized in a rectangular format with rows and columns, commonly known as table data, data frames, structured data, or spreadsheets. In Python, the Pandas library is a powerful tool for manipulating such structured datasets. This blog post explores essential operations in data analysis with Pandas, aligning with SQL concepts such as selecting columns, applying conditions, grouping, aggregating, ordering, and joining datasets.
-
-Having worked with Pandas, I noticed that while it offers numerous methods for similar tasks, the transition from SQL to Pandas can sometimes lead to less elegant and harder-to-debug code. This post aims to simplify the execution of these core SQL operations in Pandas, providing clear examples to enhance your data manipulation skills in Python.
-
-
-```{python}
-#| echo: true
-#| warning: false
-import pandas as pd
-import numpy as np
-df = pd.read_csv("https://raw.githubusercontent.com/mwaskom/seaborn-data/master/tips.csv")
-pd.options.display.max_rows = 20
-df.head(5)
-```
-
 ## Selecting columns
 
 In Pandas, column selection is straightforward using the .loc accessor:
@@ -122,17 +103,6 @@ Pandas offers powerful grouping and aggregation capabilities:
 
 In this example, ① groups the data by the 'day' column, and ② applies multiple aggregations. The agg() method allows for clear specification of column names and aggregation functions, similar to SQL's GROUP BY and aggregate functions.
 
-```{python}
-#By day get average of total bill using : functions, lambda functions, numpy functions 
-(df
- .groupby(['day'])
- .agg(avg_bill_mean=('total_bill','mean')
-     ,avg_bill_lambda=('total_bill',lambda x:x.mean()) #using lambda functions
-     ,avg_bill_np=('total_bill',np.mean)) #using numpy functions 
- .reset_index()
-)
-```
-
 ## Ordering Rows
 
 Sorting data in Pandas is achieved using the .sort_values method:
@@ -180,10 +150,9 @@ Here, ① creates a row number within each day group, sorted by total bill, simi
 )
 ```
 
-④ Calculates the sum of total bills for each day, equivalent to SUM(total_bill) OVER (PARTITION BY day) in SQL.
-⑤ Computes the cumulative sum of tips within each day, ordered by total bill. This is similar to SUM(tip) OVER (PARTITION BY day ORDER BY total_bill ASC) in SQL.
-⑥ Performs a rolling sum of tips over a 2-row window (current row and 1 preceding) within each day, ordered by total bill. This complex operation is akin to SUM(tip) OVER (PARTITION BY day ORDER BY total_bill ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) in SQL.
-
+④ Calculates the sum of total bills for each day, equivalent to `SUM(total_bill) OVER (PARTITION BY day)` in SQL.
+⑤ Computes the cumulative sum of tips within each day, ordered by total bill. This is similar to `SUM(tip) OVER (PARTITION BY day ORDER BY total_bill ASC)` in SQL.
+⑥ Performs a rolling sum of tips over a 2-row window (current row and 1 preceding) within each day, ordered by total bill. This complex operation is akin to `SUM(tip) OVER (PARTITION BY day ORDER BY total_bill ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)` in SQL.
 
 ## Conclusion
 
