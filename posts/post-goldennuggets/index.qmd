@@ -1,0 +1,42 @@
+---
+title: "Collection of insights"
+author: "Naveenan Arjunan"
+date: "2024-07-02"
+categories: [python,A/B testing,datascience]
+---
+
+
+### Menu Mind Games
+
+## References
+
+1. [New York Magazine - Menu Mind Games](https://nymag.com/restaurants/features/62498/)
+
+
+Menu engineering is an approach to design menus that maximize profitablity and influnce customer choices. It combines elements from phsycology, design and economics to guide diners towards high profitable items while maintaining the perception of value and choice.  
+
+## Key Insights
+
+1. **Item Classification**: Menu items are categorized into four groups: 
+
+* Stars: Popular and high-profit   
+* Puzzles: High-profit and Unpopular  
+* Plowhorses: Popular but unprofitable  
+* Anchor: Used as price reference points     
+
+2. **Strategic Placement**: The layout of menu items is crucial:
+
+* Upper right-hand corner is prime real estate  
+* High-profit items cluster near expensive "anchor" items  
+* Less profitable items are placed in less noticeable areas  
+
+3. **Price Presentation**: How prices are displayed affects perceived value:
+
+* Omitting dollar signs and cents can reduce price sensitivity
+* Bracketing (offering different sizes) encourages upselling
+
+
+
+
+
+

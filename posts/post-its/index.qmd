@@ -1,20 +1,23 @@
 ---
-title: "Decorators"
+title: "Interrupted Time Series Analysis"
 author: "Naveenan Arjunan"
 date: "2024-03-02"
 categories: [python,A/B testing,datascience]
-
 ---
 
-This article is part of the "Day in life of a Data Scientist" series, sharing some of the real-world problems data scientist work on daily. The question: How do we measure the impact of launching of a machine learning the business metrics when A/B testing can't be done due to operational constraints ? 
+# Measuring ML Impact Without A/B Testing: A Data Scientist's Approach
 
-Problem: 
+## Introduction
 
-We have developed an algorithm that helps agents perform outreach to maximize sales. Ideally, We would measure its impact using an A/B test, comparing the sales between agents using the model and those who aren't. However, the operatinal challenges made running a A/B testing impractical. 
+This article is part of the "Day in the Life of a Data Scientist" series, sharing some of the real-world problems data scientists work on daily. Today's question: How do we measure the impact of launching a machine learning model on business metrics when A/B testing can't be done due to operational constraints?
 
-Solution: 
+## The Problem
 
-The solution to this problem is to use Interrupted Time Series (ITS) analysis. 
+We have developed an algorithm that helps agents perform outreach to maximize sales. Ideally, we would measure its impact using an A/B test, comparing the sales between agents using the model and those who aren't. However, operational challenges made running an A/B test impractical.
+
+## The Solution
+
+The solution to this problem is to use Interrupted Time Series (ITS) analysis.
 
 
 
