@@ -3,6 +3,7 @@ title: "Collection of insights"
 author: "Naveenan Arjunan"
 date: "2024-07-02"
 categories: [python,A/B testing,datascience]
+draft: true
 ---
 
 
