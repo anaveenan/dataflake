@@ -409,7 +409,6 @@ Once you've built this from scratch, no agent framework feels like magic anymore
 
 - **Tool calling via JSON schema** — replacing fragile text parsing with structured API tool calls
 - **Multi-agent systems** — one agent spawning sub-agents as "tools"
-- **smolagents** — how HuggingFace wraps this loop with CodeAgent (tools as Python code, not JSON)
 - **Memory beyond the context window** — vector stores and external memory for long-running agents
 
 ---
