@@ -1,0 +1,417 @@
+---
+title: "Thought → Action → Observation: The Heartbeat of Every AI Agent"
+description: "A deep dive into the ReAct pattern — the architecture behind every agent framework, explained from scratch with a real-world customer support example."
+author: "Naveenan"
+date: "2026-03-22"
+categories: [AI Agents, LLMs, ReAct, Python, HuggingFace]
+image: "cover.png"
+toc: true
+toc-depth: 3
+code-fold: false
+highlight-style: github
+---
+
+## Introduction
+
+If you've ever used Claude Code, LangGraph, CrewAI, or smolagents and wondered *what's actually happening under the hood* — the answer is surprisingly simple.
+
+Every AI agent, regardless of framework, runs the same three-step loop over and over:
+
+$\text{Thought} \rightarrow \text{Action} \rightarrow \text{Observation}$
+
+This pattern is called **ReAct** (Reasoning + Acting), and once you understand it, every agent framework becomes far less magical. This post builds it from scratch — no frameworks, just Python and an LLM.
+
+---
+
+## The Three Parts
+
+The loop has three distinct phases, each with a different owner:
+
+| Part | Owner | What it is |
+|---|---|---|
+| **Thought** | The LLM | Reasoning in plain text — no code runs |
+| **Action** | Your Python code | A real function actually executes |
+| **Observation** | Your Python code | The result fed back to the LLM |
+
+Let's unpack each one.
+
+---
+
+### 🧠 Thought — The LLM Reasoning
+
+Thought is pure language model output. No tools run, no code executes. The LLM is simply thinking out loud about what to do next.
+
+```
+Thought: The user wants to know the weather in Chicago
+         and also convert 72°F to Celsius.
+         I should get the weather first, then calculate.
+```
+
+This answers the question: **"What should I do next, and why?"**
+
+It can be wrong. It can hallucinate. But it gives the agent a chance to *plan before acting*, which dramatically improves reliability compared to blindly firing tools.
+
+---
+
+### ⚡ Action — Code Actually Runs
+
+This is where something real happens. The LLM outputs a structured signal requesting a tool call — and your agent code executes it.
+
+```
+Action: get_weather
+Action Input: Chicago
+```
+
+Your Python code sees this text, looks up `get_weather` in your tools dictionary, and runs it. The LLM itself **never executes the function** — it just requested it in text.
+
+This answers the question: **"What tool do I call right now?"**
+
+---
+
+### 👁️ Observation — Reality Check
+
+The actual result of the tool execution, fed back into the conversation. This is what grounds the agent in reality instead of letting it hallucinate answers.
+
+```
+Observation: Chicago is 72°F, partly cloudy
+```
+
+This gets appended to the `messages` list so the LLM can reason about it on the next iteration.
+
+This answers the question: **"What did the real world return?"**
+
+---
+
+## The Architecture
+
+```
+                    ┌─────────────────────┐
+                    │     USER QUERY      │
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │    SYSTEM PROMPT    │
+                    │  (tools described,  │
+                    │   format defined)   │
+                    └──────────┬──────────┘
+                               │
+                               ▼
+┌──────────────────────────────────────────────────────┐
+│                    AGENT LOOP                        │
+│                                                      │
+│   ┌─────────┐                                        │
+│   │ THOUGHT │  ← LLM reads full messages list        │
+│   └────┬────┘    and reasons about next step         │
+│        ▼                                             │
+│   ┌─────────┐                                        │
+│   │ ACTION  │  ← LLM outputs tool name + input       │
+│   └────┬────┘    Your code actually runs the tool    │
+│        ▼                                             │
+│   ┌─────────────┐                                    │
+│   │ OBSERVATION │  ← Tool result appended to         │
+│   └────┬────────┘    messages list                   │
+│        ▼                                             │
+│   Final Answer? ──Yes──► return to user              │
+│        │                                             │
+│       No                                             │
+│        └────────────► loop back to THOUGHT           │
+└──────────────────────────────────────────────────────┘
+```
+
+The **messages list is the agent's memory**. It grows with every cycle:
+
+```python
+messages = [
+  {"role": "system",    "content": SYSTEM_PROMPT},
+  {"role": "user",      "content": user_query},
+  {"role": "assistant", "content": "Thought + Action"},   # cycle 1
+  {"role": "user",      "content": "Observation: ..."},   # cycle 1
+  {"role": "assistant", "content": "Thought + Action"},   # cycle 2
+  {"role": "user",      "content": "Observation: ..."},   # cycle 2
+  # keeps growing...
+]
+```
+
+---
+
+## Building It From Scratch
+
+Let's implement this with the HuggingFace `InferenceClient` — no frameworks.
+
+### Step 0 — Setup
+
+```python
+from huggingface_hub import InferenceClient
+
+client = InferenceClient(model="moonshotai/Kimi-K2.5")
+
+# ── Define your tools ──────────────────────────────
+def calculator(expression: str) -> str:
+    return str(eval(expression))
+
+def get_weather(city: str) -> str:
+    return f"The weather in {city} is sunny, 22°C"
+
+TOOLS = {
+    "calculator": calculator,
+    "get_weather": get_weather,
+}
+```
+
+### Step 1 — Write the System Prompt
+
+The system prompt does two things: tells the LLM what tools exist, and defines the exact text format to use for tool calls.
+
+```python
+SYSTEM_PROMPT = """You are a helpful assistant.
+You have access to these tools:
+
+- calculator(expression: str): Evaluates a math expression
+- get_weather(city: str): Returns weather for a city
+
+Always respond in this EXACT format:
+
+Thought: [your reasoning about what to do next]
+Action: [tool_name]
+Action Input: [input to the tool]
+
+After receiving an Observation, continue with:
+
+Thought: [reasoning about what you learned]
+Action: [next tool if needed]
+Action Input: [input]
+
+When you have everything you need:
+Thought: [final reasoning]
+Final Answer: [your complete answer to the user]
+"""
+```
+
+### Step 2 — Parse LLM Output
+
+```python
+def parse_response(reply: str):
+    tool_name  = None
+    tool_input = None
+
+    for line in reply.strip().split("\n"):
+        if line.startswith("Action:"):
+            tool_name = line.replace("Action:", "").strip()
+        elif line.startswith("Action Input:"):
+            tool_input = line.replace("Action Input:", "").strip()
+
+    is_final = "Final Answer:" in reply
+    return tool_name, tool_input, is_final
+```
+
+### Step 3 — The Agent Loop
+
+```python
+user_query = "What is 25 * 48, and what's the weather in Paris?"
+
+messages = [
+    {"role": "system", "content": SYSTEM_PROMPT},
+    {"role": "user",   "content": user_query},
+]
+
+for step in range(10):  # max 10 steps to prevent infinite loops
+    print(f"\n── Step {step + 1} ──")
+
+    # Call the LLM
+    response = client.chat.completions.create(
+        messages=messages,
+        max_tokens=512,
+        stream=False,
+    )
+    reply = response.choices[0].message.content
+    print(f"LLM:\n{reply}")
+
+    tool_name, tool_input, is_final = parse_response(reply)
+
+    # Done?
+    if is_final:
+        final = reply.split("Final Answer:")[-1].strip()
+        print(f"\n✅ Final Answer: {final}")
+        break
+
+    # Run the tool
+    if tool_name in TOOLS:
+        result = TOOLS[tool_name](tool_input)
+        print(f"\nTool result: {result}")
+    else:
+        result = f"Error: tool '{tool_name}' not found"
+
+    # Update memory
+    messages.append({"role": "assistant", "content": reply})
+    messages.append({"role": "user",      "content": f"Observation: {result}"})
+```
+
+---
+
+## Tracing a Full Run
+
+For the query `"What is 25 * 48, and what's the weather in Paris?"`:
+
+**Cycle 1**
+
+```
+Thought:  The user wants two things — a calculation and
+          weather info. I'll start with the calculator.
+Action:   calculator
+Input:    25 * 48
+---
+[code runs calculator("25 * 48")]
+Observation: 1200
+```
+
+**Cycle 2**
+
+```
+Thought:  Got 1200. Now I need the weather in Paris.
+Action:   get_weather
+Input:    Paris
+---
+[code runs get_weather("Paris")]
+Observation: The weather in Paris is sunny, 22°C
+```
+
+**Cycle 3**
+
+```
+Thought:  I have everything I need.
+Final Answer: 25 × 48 = 1200, and the weather
+              in Paris is currently sunny at 22°C.
+```
+
+**3 LLM calls. 2 tool executions. 1 coherent answer.**
+
+---
+
+## Real World Example — Customer Support Agent
+
+Let's make this concrete with a real scenario. A customer messages your e-commerce support bot:
+
+> *"Where is my order #4521 and can you refund it if it's delayed?"*
+
+### The Tools
+
+```python
+def get_order_status(order_id: str) -> str:
+    # In reality: hits your orders database
+    return "Order #4521 is stuck in Memphis, TN. 2 days delayed."
+
+def check_refund_eligibility(order_id: str) -> str:
+    return "Order #4521 is eligible for full refund."
+
+def issue_refund(order_id: str) -> str:
+    return "Refund of $84.99 issued. Appears in 3-5 business days."
+
+TOOLS = {
+    "get_order_status":        get_order_status,
+    "check_refund_eligibility": check_refund_eligibility,
+    "issue_refund":            issue_refund,
+}
+```
+
+### What the Agent Does
+
+**Cycle 1 — Check the order**
+
+```
+Thought:  Customer wants order status and a refund if delayed.
+          Check status first.
+Action:   get_order_status
+Input:    4521
+
+Observation: Order #4521 is stuck in Memphis, TN. 2 days delayed.
+```
+
+**Cycle 2 — Check refund eligibility**
+
+```
+Thought:  It IS delayed. Customer asked for a refund if delayed.
+          Check if it's eligible before issuing.
+Action:   check_refund_eligibility
+Input:    4521
+
+Observation: Order #4521 is eligible for full refund.
+```
+
+**Cycle 3 — Issue the refund**
+
+```
+Thought:  Eligible, and customer explicitly asked. Issue it.
+Action:   issue_refund
+Input:    4521
+
+Observation: Refund of $84.99 issued. Appears in 3-5 business days.
+```
+
+**Cycle 4 — Final Answer**
+
+```
+Thought:  I have everything. Give the customer a complete answer.
+
+Final Answer: Your order #4521 is delayed by 2 days — it's stuck
+in Memphis, TN. I've gone ahead and issued a full refund of $84.99
+to your original payment method. You'll see it in 3-5 business days.
+Sorry for the inconvenience!
+```
+
+**4 LLM calls. 3 real database/API operations. 1 fully resolved support ticket.**
+
+---
+
+## Why Each Part is Critical
+
+Removing any one of the three parts breaks the agent:
+
+**Without Thought** — the agent blindly calls tools without a plan, likely in the wrong order or calling unnecessary ones.
+
+**Without Action** — the agent hallucinates answers ("your order is probably fine") instead of checking real data.
+
+**Without Observation** — the agent never knows what the tool actually returned and can't build on previous steps.
+
+The three parts form a **feedback loop** — each observation makes the next thought smarter, which makes the next action more targeted. This compound improvement over multiple cycles is what makes agents feel intelligent rather than scripted.
+
+---
+
+## From Dummy Agent to Claude Code
+
+This simple loop scales all the way up to production tools like Claude Code:
+
+| | Dummy Agent | Claude Code |
+|---|---|---|
+| **Tools** | `calculator`, `get_weather` | `read_file`, `write_file`, `run_bash`, `search_files` |
+| **System Prompt** | ~10 lines | Entire project tree + git state + preferences |
+| **Tool parsing** | Regex on text | Structured JSON via API schema |
+| **Error handling** | None | Retries, self-correction, approval gates |
+| **Memory** | messages list | Same messages list, just much larger |
+
+The conceptual model is identical. Claude Code is this dummy agent loop with production-grade tooling on top.
+
+---
+
+## Key Takeaways
+
+- **Thought** is the LLM planning in text — nothing runs, but it dramatically improves decision quality
+- **Action** is your code running a real function — the LLM only *requests* it, never executes it
+- **Observation** grounds the agent in reality — without it, the agent would hallucinate results
+- The **messages list is the memory** — every cycle's Thought + Action + Observation gets appended to it
+- Every agent framework (smolagents, LangGraph, CrewAI, Claude Code) is this loop with better tooling
+
+Once you've built this from scratch, no agent framework feels like magic anymore.
+
+---
+
+## What's Next
+
+- **Tool calling via JSON schema** — replacing fragile text parsing with structured API tool calls
+- **Multi-agent systems** — one agent spawning sub-agents as "tools"
+- **smolagents** — how HuggingFace wraps this loop with CodeAgent (tools as Python code, not JSON)
+- **Memory beyond the context window** — vector stores and external memory for long-running agents
+
+---
+
+*This post is part of a series following the [HuggingFace Agents Course](https://huggingface.co/learn/agents-course). All code examples use the HuggingFace InferenceClient.*
